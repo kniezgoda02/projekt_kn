@@ -10,7 +10,7 @@ class Hotel:
         self.location = location
         self.stars = stars
         self.coordinates = self.get_coordinates()
-        self.marker = map_widget.set_marker(self.coordinates[0], self.coordinates[1], text=f"{self.name}")
+        self.marker = self.create_marker()
 
     def get_coordinates(self) -> list:
         import requests
@@ -22,6 +22,13 @@ class Hotel:
             float(response_html.select('.longitude')[1].text.replace(',', '.')),
         ]
 
+    def create_marker(self):
+        return map_widget.set_marker(
+            self.coordinates[0],
+            self.coordinates[1],
+            text=f"{self.name}"
+        )
+
 
 def add_hotel() -> None:
     name = entry_name.get()
@@ -30,8 +37,6 @@ def add_hotel() -> None:
 
     hotel = Hotel(name=name, location=location, stars=stars)
     hotels.append(hotel)
-    map_widget.set_marker(hotel.coordinates[0], hotel.coordinates[1], text=f"{name}")
-    print(hotels)
 
     entry_name.delete(0, END)
     entry_location.delete(0, END)
@@ -49,20 +54,17 @@ def show_hotels():
 
 def remove_hotel():
     i = listbox_lista_obiektow.index(ACTIVE)
-    hotels[i].marker.delete()
+    if hotels[i].marker:
+        hotels[i].marker.delete()
     hotels.pop(i)
     show_hotels()
 
 
 def edit_hotel():
     i = listbox_lista_obiektow.index(ACTIVE)
-    name = hotels[i].name
-    location = hotels[i].location
-    stars = hotels[i].stars
-
-    entry_name.insert(0, name)
-    entry_location.insert(0, location)
-    entry_stars.insert(0, stars)
+    entry_name.insert(0, hotels[i].name)
+    entry_location.insert(0, hotels[i].location)
+    entry_stars.insert(0, hotels[i].stars)
 
     button_dodaj_obiekt.configure(text='Zapisz', command=lambda: update_hotel(i))
 
@@ -72,14 +74,16 @@ def update_hotel(i):
     location = entry_location.get()
     stars = entry_stars.get()
 
+    # Usuń stary marker
+    if hotels[i].marker:
+        hotels[i].marker.delete()
+
+    # Zaktualizuj dane hotelu
     hotels[i].name = name
     hotels[i].location = location
     hotels[i].stars = stars
-
     hotels[i].coordinates = hotels[i].get_coordinates()
-    hotels[i].marker.delete()
-    hotels[i].marker = map_widget.set_marker(hotels[i].coordinates[0], hotels[i].coordinates[1],
-                                             text=f'{hotels[i].name}')
+    hotels[i].marker = hotels[i].create_marker()
 
     show_hotels()
     button_dodaj_obiekt.configure(text='Dodaj', command=add_hotel)
@@ -87,7 +91,6 @@ def update_hotel(i):
     entry_name.delete(0, END)
     entry_location.delete(0, END)
     entry_stars.delete(0, END)
-
     entry_name.focus()
 
 
@@ -101,7 +104,7 @@ def show_hotel_detail():
     map_widget.set_position(hotels[i].coordinates[0], hotels[i].coordinates[1])
 
 
-# GUI
+# GUI setup
 root = Tk()
 root.geometry("1200x700")
 root.title('HotelMap')
@@ -117,35 +120,25 @@ ramka_szczegoly_obiektow.grid(row=1, column=0, columnspan=2)
 ramka_mapa.grid(row=2, column=0, columnspan=2)
 
 # Lista hoteli
-label_lista_obiektow = Label(ramka_lista_obiektow, text='Lista hoteli:')
-label_lista_obiektow.grid(row=0, column=0)
+Label(ramka_lista_obiektow, text='Lista hoteli:').grid(row=0, column=0)
 
 listbox_lista_obiektow = Listbox(ramka_lista_obiektow, width=50, height=10)
 listbox_lista_obiektow.grid(row=1, column=0, columnspan=3)
 
-button_pokaz_szczegoly = Button(ramka_lista_obiektow, text='Pokaż szczegóły:', command=show_hotel_detail)
-button_pokaz_szczegoly.grid(row=2, column=0)
-button_usun_obiekt = Button(ramka_lista_obiektow, text='Usuń', command=remove_hotel)
-button_usun_obiekt.grid(row=2, column=1)
-button_edytuj_obiekt = Button(ramka_lista_obiektow, text='Edytuj', command=edit_hotel)
-button_edytuj_obiekt.grid(row=2, column=2)
+Button(ramka_lista_obiektow, text='Pokaż szczegóły:', command=show_hotel_detail).grid(row=2, column=0)
+Button(ramka_lista_obiektow, text='Usuń', command=remove_hotel).grid(row=2, column=1)
+Button(ramka_lista_obiektow, text='Edytuj', command=edit_hotel).grid(row=2, column=2)
 
-# Formularz dodawania hotelu
-label_formularz = Label(ramka_formularz, text='Formularz:')
-label_formularz.grid(row=0, column=0, sticky=W)
+# Formularz
+Label(ramka_formularz, text='Formularz:').grid(row=0, column=0, sticky=W)
+Label(ramka_formularz, text='Nazwa hotelu:').grid(row=1, column=0, sticky=W)
+Label(ramka_formularz, text='Lokalizacja:').grid(row=2, column=0, sticky=W)
+Label(ramka_formularz, text='Liczba gwiazdek:').grid(row=3, column=0, sticky=W)
 
-label_name = Label(ramka_formularz, text='Nazwa hotelu:')
-label_name.grid(row=1, column=0, sticky=W)
 entry_name = Entry(ramka_formularz)
 entry_name.grid(row=1, column=1)
-
-label_location = Label(ramka_formularz, text='Lokalizacja:')
-label_location.grid(row=2, column=0, sticky=W)
 entry_location = Entry(ramka_formularz)
 entry_location.grid(row=2, column=1)
-
-label_stars = Label(ramka_formularz, text='Liczba gwiazdek:')
-label_stars.grid(row=3, column=0, sticky=W)
 entry_stars = Entry(ramka_formularz)
 entry_stars.grid(row=3, column=1)
 
@@ -153,21 +146,17 @@ button_dodaj_obiekt = Button(ramka_formularz, text='Dodaj', command=add_hotel)
 button_dodaj_obiekt.grid(row=4, column=0, columnspan=2)
 
 # Szczegóły hotelu
-label_pokaz_szczegoly = Label(ramka_szczegoly_obiektow, text='Szczegóły hotelu:')
-label_pokaz_szczegoly.grid(row=0, column=0)
+Label(ramka_szczegoly_obiektow, text='Szczegóły hotelu:').grid(row=0, column=0)
 
-label_szczegoly_obiektow_name = Label(ramka_szczegoly_obiektow, text='Nazwa:')
-label_szczegoly_obiektow_name.grid(row=1, column=0)
+Label(ramka_szczegoly_obiektow, text='Nazwa:').grid(row=1, column=0)
 label_szczegoly_obiektow_name_wartosc = Label(ramka_szczegoly_obiektow, text='....')
 label_szczegoly_obiektow_name_wartosc.grid(row=1, column=1)
 
-label_szczegoly_obiektow_location = Label(ramka_szczegoly_obiektow, text='Lokalizacja:')
-label_szczegoly_obiektow_location.grid(row=1, column=2)
+Label(ramka_szczegoly_obiektow, text='Lokalizacja:').grid(row=1, column=2)
 label_szczegoly_obiektow_location_wartosc = Label(ramka_szczegoly_obiektow, text='....')
 label_szczegoly_obiektow_location_wartosc.grid(row=1, column=3)
 
-label_szczegoly_obiektow_stars = Label(ramka_szczegoly_obiektow, text='Gwiazdek:')
-label_szczegoly_obiektow_stars.grid(row=1, column=4)
+Label(ramka_szczegoly_obiektow, text='Gwiazdek:').grid(row=1, column=4)
 label_szczegoly_obiektow_stars_wartosc = Label(ramka_szczegoly_obiektow, text='....')
 label_szczegoly_obiektow_stars_wartosc.grid(row=1, column=5)
 
