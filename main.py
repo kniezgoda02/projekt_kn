@@ -295,7 +295,7 @@ root.geometry("1200x700")
 root.title('HotelMap')
 
 frame_hotels = LabelFrame(root, text="Hotele", padx=5, pady=5)
-frame_hotels.grid(row=0, column=0, sticky="nw", padx=10)
+frame_hotels.grid(row=0, column=0, sticky="nw", padx=5)
 
 frame_employees = LabelFrame(root, text="Pracownicy", padx=5, pady=5)
 frame_employees.grid(row=0, column=1, sticky="nw", padx=10)
@@ -322,13 +322,13 @@ Label(frame_hotels, text="Liczba gwiazdek:").grid(row=2, column=0)
 entry_stars = Entry(frame_hotels)
 entry_stars.grid(row=2, column=1)
 button_add_hotel = Button(frame_hotels, text="Dodaj hotel", command=add_hotel)
-button_add_hotel.grid(row=3, column=0, columnspan=2)
+button_add_hotel.grid(row=6, column=0)
 
 listbox_lista_obiektow = Listbox(frame_hotels, width=35)
-listbox_lista_obiektow.grid(row=4, column=0, columnspan=2)
-Button(frame_hotels, text="Pokaż szczegóły", command=show_hotel_detail).grid(row=5, column=0)
-Button(frame_hotels, text="Usuń", command=remove_hotel).grid(row=5, column=1)
-Button(frame_hotels, text="Edytuj", command=edit_hotel).grid(row=6, column=0, columnspan=2)
+listbox_lista_obiektow.grid(row=5, column=0, columnspan=2)
+Button(frame_hotels, text="Pokaż szczegóły", command=show_hotel_detail).grid(row=7, column=0)
+Button(frame_hotels, text="Usuń", command=remove_hotel).grid(row=7, column=1, columnspan=1)
+Button(frame_hotels, text="Edytuj", command=edit_hotel).grid(row=6, column=1, columnspan=1)
 
 # Szczegóły hotelu
 Label(frame_details, text="Szczegóły hotelu:").grid(row=0, column=0, columnspan=3)
