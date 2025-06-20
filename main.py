@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 hotels: list = []
 employees: list = []
+clients: list = []
 
 
 class Hotel:
@@ -50,6 +51,29 @@ class Employee:
                                      text=f"👤 {self.first_name} {self.last_name} ({self.hotel_name})")
 
 
+class Client:
+    def __init__(self, first_name, last_name, city, hotel_name):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.city = city
+        self.hotel_name = hotel_name
+        self.coordinates = self.get_coordinates()
+        self.marker = self.create_marker()
+
+    def get_coordinates(self):
+        url = f'https://pl.wikipedia.org/wiki/{self.city}'
+        html = BeautifulSoup(requests.get(url).text, 'html.parser')
+        return [
+            float(html.select('.latitude')[1].text.replace(',', '.')),
+            float(html.select('.longitude')[1].text.replace(',', '.')),
+        ]
+
+    def create_marker(self):
+        return map_widget.set_marker(self.coordinates[0], self.coordinates[1],
+                                     text=f"🧳 {self.first_name} {self.last_name} ({self.hotel_name})")
+
+
+# Funkcje hotelu
 def add_hotel() -> None:
     name = entry_name.get()
     location = entry_location.get()
@@ -101,11 +125,9 @@ def update_hotel(i):
     location = entry_location.get()
     stars = entry_stars.get()
 
-    # Usuń stary marker
     if hotels[i].marker:
         hotels[i].marker.delete()
 
-    # Zaktualizuj dane hotelu
     hotels[i].name = name
     hotels[i].location = location
     hotels[i].stars = stars
@@ -127,10 +149,11 @@ def show_hotel_detail():
     label_szczegoly_obiektow_location_wartosc.config(text=hotels[i].location)
     label_szczegoly_obiektow_stars_wartosc.config(text=hotels[i].stars)
 
-    map_widget.set_zoom(15)
+    map_widget.set_zoom(14)
     map_widget.set_position(hotels[i].coordinates[0], hotels[i].coordinates[1])
 
 
+# Pracownicy
 def add_employee():
     fname = entry_fname.get()
     lname = entry_lname.get()
@@ -195,39 +218,96 @@ def update_employee(i):
     entry_city.delete(0, END)
     entry_role.delete(0, END)
     hotel_var.set(hotels[0].name if hotels else "")
-    button_add_emp.config(text="Dodaj pracownika", command=add_employee)
+    button_add_emp.config(text="Dodaj", command=add_employee)
+
+
+# --- Funkcje klientów ---
+def add_client():
+    fname = entry_c_fname.get()
+    lname = entry_c_lname.get()
+    city = entry_c_city.get()
+    hotel = hotel_client_var.get()
+    if fname and lname and city and hotel:
+        client = Client(fname, lname, city, hotel)
+        clients.append(client)
+        show_clients()
+        entry_c_fname.delete(0, END)
+        entry_c_lname.delete(0, END)
+        entry_c_city.delete(0, END)
+
+
+def show_clients():
+    listbox_clients.delete(0, END)
+    for idx, c in enumerate(clients):
+        listbox_clients.insert(idx, f"{c.first_name} {c.last_name} ({c.hotel_name})")
+
+
+def remove_client():
+    i = listbox_clients.index(ACTIVE)
+    clients[i].marker.delete()
+    clients.pop(i)
+    show_clients()
+
+
+def edit_client():
+    i = listbox_clients.index(ACTIVE)
+    c = clients[i]
+    entry_c_fname.delete(0, END)
+    entry_c_lname.delete(0, END)
+    entry_c_city.delete(0, END)
+    entry_c_fname.insert(0, c.first_name)
+    entry_c_lname.insert(0, c.last_name)
+    entry_c_city.insert(0, c.city)
+    hotel_client_var.set(c.hotel_name)
+    button_add_client.config(text="Zapisz", command=lambda: update_client(i))
+
+
+def update_client(i):
+    clients[i].marker.delete()
+    clients[i].first_name = entry_c_fname.get()
+    clients[i].last_name = entry_c_lname.get()
+    clients[i].city = entry_c_city.get()
+    clients[i].hotel_name = hotel_client_var.get()
+    clients[i].coordinates = clients[i].get_coordinates()
+    clients[i].marker = clients[i].create_marker()
+    show_clients()
+    button_add_client.config(text="Dodaj klienta", command=add_client)
 
 
 def update_hotel_dropdown():
     hotel_dropdown['menu'].delete(0, 'end')
+    hotel_client_dropdown['menu'].delete(0, 'end')
     for h in hotels:
         hotel_dropdown['menu'].add_command(label=h.name, command=lambda value=h.name: hotel_var.set(value))
+        hotel_client_dropdown['menu'].add_command(label=h.name,
+                                                  command=lambda value=h.name: hotel_client_var.set(value))
     if hotels:
         hotel_var.set(hotels[0].name)
+        hotel_client_var.set(hotels[0].name)
     else:
         hotel_var.set("")
+        hotel_client_var.set("")
     update_hotel_dropdown()
-
 
 # GUI setup
 root = Tk()
 root.geometry("1200x700")
 root.title('HotelMap')
 
-frame_hotels = LabelFrame(root, text="Hotele", padx=10, pady=10)
-frame_hotels.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
+frame_hotels = LabelFrame(root, text="Hotele", padx=5, pady=5)
+frame_hotels.grid(row=0, column=0, sticky="nw", padx=10)
 
-frame_form = Frame(root)
-frame_form.grid(row=0, column=1, sticky="nw", padx=10, pady=10)
+frame_employees = LabelFrame(root, text="Pracownicy", padx=5, pady=5)
+frame_employees.grid(row=0, column=2, sticky="nw", padx=10)
 
-frame_employees = LabelFrame(root, text="Pracownicy", padx=10, pady=10)
-frame_employees.grid(row=0, column=2, sticky="nw", padx=10, pady=10)
+frame_clients = LabelFrame(root, text="Klienci", padx=5, pady=5)
+frame_clients.grid(row=0, column=3, sticky="nw", padx=10)
 
 frame_details = Frame(root)
-frame_details.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
+frame_details.grid(row=0, column=3, columnspan=3, padx=5)
 
 frame_map = Frame(root)
-frame_map.grid(row=2, column=0, columnspan=4)
+frame_map.grid(row=2, column=3, columnspan=3)
 
 # Lista hoteli
 Label(frame_hotels, text='Lista hoteli:').grid(row=0, column=0)
@@ -240,6 +320,9 @@ Button(frame_hotels, text='Usuń', command=remove_hotel).grid(row=2, column=1)
 Button(frame_hotels, text='Edytuj', command=edit_hotel).grid(row=2, column=2)
 
 # Formularz
+frame_form = LabelFrame(root, text="Formularz", padx=5, pady=5)
+frame_form.grid(row=0, column=1, sticky="nw", padx=10)
+
 Label(frame_form, text='Formularz:').grid(row=0, column=0, sticky=W)
 Label(frame_form, text='Nazwa hotelu:').grid(row=1, column=0, sticky=W)
 Label(frame_form, text='Lokalizacja:').grid(row=2, column=0, sticky=W)
@@ -293,6 +376,27 @@ listbox_employees = Listbox(frame_employees, width=50)
 listbox_employees.grid(row=6, column=0, columnspan=2)
 Button(frame_employees, text="Usuń pracownika", command=remove_employee).grid(row=7, column=0, columnspan=2)
 Button(frame_employees, text="Edytuj pracownika", command=edit_employee).grid(row=8, column=0, columnspan=2)
+
+# Klienci
+Label(frame_clients, text="Imię:").grid(row=0, column=0)
+entry_c_fname = Entry(frame_clients)
+entry_c_fname.grid(row=0, column=1)
+Label(frame_clients, text="Nazwisko:").grid(row=1, column=0)
+entry_c_lname = Entry(frame_clients)
+entry_c_lname.grid(row=1, column=1)
+Label(frame_clients, text="Miasto:").grid(row=2, column=0)
+entry_c_city = Entry(frame_clients)
+entry_c_city.grid(row=2, column=1)
+hotel_client_var = StringVar()
+hotel_client_dropdown = OptionMenu(frame_clients, hotel_client_var, "")
+hotel_client_dropdown.grid(row=3, column=1)
+button_add_client = Button(frame_clients, text="Dodaj klienta", command=add_client)
+button_add_client.grid(row=0, column=3, columnspan=2)
+listbox_clients = Listbox(frame_clients, width=35)
+listbox_clients.grid(row=5, column=0, columnspan=2)
+Button(frame_clients, text="Usuń klienta", command=remove_client).grid(row=6, column=0, columnspan=2)
+Button(frame_clients, text="Edytuj klienta", command=edit_client).grid(row=7, column=0, columnspan=2)
+
 
 # Mapa
 map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
