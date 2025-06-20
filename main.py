@@ -220,6 +220,7 @@ def update_employee(i):
     hotel_var.set(hotels[0].name if hotels else "")
     button_add_emp.config(text="Zapisz", command=add_employee)
 
+
 def show_employee_detail():
     i = listbox_employees.index(ACTIVE)
     emp = employees[i]
@@ -230,6 +231,7 @@ def show_employee_detail():
 
     map_widget.set_zoom(14)
     map_widget.set_position(emp.coordinates[0], emp.coordinates[1])
+
 
 # --- Funkcje klientów ---
 def add_client():
@@ -307,6 +309,7 @@ def show_client_details():
     label_client_hotel.config(text=f"Hotel: {c.hotel_name}")
     map_widget.set_zoom(14)
     map_widget.set_position(c.coordinates[0], c.coordinates[1])
+
 
 # GUI setup
 root = Tk()
@@ -398,8 +401,8 @@ button_add_emp.grid(row=6, column=0)
 listbox_employees = Listbox(frame_employees, width=35)
 listbox_employees.grid(row=5, column=0, columnspan=2, pady=(10, 10))
 Button(frame_employees, text="Usuń", command=remove_employee).grid(row=7, column=1, columnspan=1, padx=2, pady=(0, 2))
-Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=6, column=1, columnspan=1,  padx=2, pady=(0, 2))
-Button(frame_employees, text="Pokaż szczegóły",command=show_employee_detail).grid(row=7, column=0, padx=2, pady=(0, 2))
+Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=6, column=1, columnspan=1, padx=2, pady=(0, 2))
+Button(frame_employees, text="Pokaż szczegóły", command=show_employee_detail).grid(row=7, column=0, padx=2, pady=(0, 2))
 
 # Szczegóły pracownika
 Label(frame_employee_details, text="Szczegóły pracownika:").grid(row=4, column=0, sticky="w", padx=(10, 30))
@@ -411,7 +414,6 @@ label_emp_role = Label(frame_employee_details, text='Stanowisko: ....')
 label_emp_role.grid(row=7, column=0, sticky="w", padx=(10, 30))
 label_emp_hotel = Label(frame_employee_details, text='Hotel: ....')
 label_emp_hotel.grid(row=8, column=0, sticky="w", padx=(10, 30))
-
 
 # Klienci
 Label(frame_clients, text="Imię:").grid(row=0, column=0)
@@ -435,7 +437,7 @@ Button(frame_clients, text="Usuń", command=remove_client).grid(row=6, column=1)
 Button(frame_clients, text="Edytuj", command=edit_client).grid(row=5, column=1)
 Button(frame_clients, text="Pokaż szczegóły", command=show_client_details).grid(row=6, column=0)
 
-#szczegóły klienta
+# szczegóły klienta
 Label(frame_client_details, text="Szczegóły klienta:").grid(row=9, column=0, columnspan=3, sticky="w", padx=(10, 0))
 label_client_name = Label(frame_client_details, text='Imię i nazwisko: ....')
 label_client_name.grid(row=10, column=0, sticky="w", padx=(10, 30))
