@@ -299,25 +299,48 @@ def update_hotel_dropdown():
         hotel_client_var.set("")
     update_hotel_dropdown()
 
+def show_client_details():
+    i = listbox_clients.index(ACTIVE)
+    c = clients[i]
+    label_client_name.config(text=f"Imię i nazwisko: {c.first_name} {c.last_name}")
+    label_client_city.config(text=f"Miasto: {c.city}")
+    label_client_hotel.config(text=f"Hotel: {c.hotel_name}")
+    map_widget.set_zoom(14)
+    map_widget.set_position(c.coordinates[0], c.coordinates[1])
+
 # GUI setup
 root = Tk()
-root.geometry("1200x700")
+root.geometry("1200x800")
 root.title('HotelMap')
 
+for i in range(4):
+    root.columnconfigure(i, weight=1, uniform="group1")
+
+ramka_wysokosc = 400
+
 frame_hotels = LabelFrame(root, text="Hotele", padx=5, pady=5)
-frame_hotels.grid(row=0, column=0, sticky="nw", padx=5)
+frame_hotels.grid(row=0, column=0, sticky="nsew")
+frame_hotels.configure(height=ramka_wysokosc)
+frame_hotels.grid_propagate(False)
 
 frame_employees = LabelFrame(root, text="Pracownicy", padx=5, pady=5)
-frame_employees.grid(row=0, column=1, sticky="nw", padx=10)
+frame_employees.grid(row=0, column=1, sticky="nsew")
+frame_employees.configure(height=ramka_wysokosc)
+frame_employees.grid_propagate(False)
 
 frame_clients = LabelFrame(root, text="Klienci", padx=5, pady=5)
-frame_clients.grid(row=0, column=2, sticky="nw", padx=10)
+frame_clients.grid(row=0, column=2, sticky="nsew")
+frame_clients.configure(height=ramka_wysokosc)
+frame_clients.grid_propagate(False)
 
 frame_details = Frame(root)
-frame_details.grid(row=1, column=0, columnspan=3, padx=5)
+frame_details.grid(row=1, column=0, columnspan=4, sticky="ew", padx=5)
+
+frame_client_details = Frame(frame_details)
+frame_client_details.grid(row=1, column=2, sticky="w", padx=20)
 
 frame_map = Frame(root)
-frame_map.grid(row=2, column=0, columnspan=3)
+frame_map.grid(row=2, column=0, columnspan=4, sticky="nsew")
 
 
 
@@ -335,7 +358,7 @@ button_add_hotel = Button(frame_hotels, text="Dodaj hotel", command=add_hotel)
 button_add_hotel.grid(row=6, column=0)
 
 listbox_lista_obiektow = Listbox(frame_hotels, width=35)
-listbox_lista_obiektow.grid(row=5, column=0, columnspan=2)
+listbox_lista_obiektow.grid(row=3, column=0, columnspan=2)
 Button(frame_hotels, text="Pokaż szczegóły", command=show_hotel_detail).grid(row=7, column=0)
 Button(frame_hotels, text="Usuń", command=remove_hotel).grid(row=7, column=1, columnspan=1)
 Button(frame_hotels, text="Edytuj", command=edit_hotel).grid(row=6, column=1, columnspan=1)
@@ -346,7 +369,7 @@ label_name = Label(frame_details, text="Nazwa: ....")
 label_name.grid(row=1, column=0, sticky="w")
 label_location = Label(frame_details, text="Lokalizacja: ....")
 label_location.grid(row=1, column=1, sticky="w")
-label_stars = Label(frame_details, text="Gwiazdek: ....")
+label_stars = Label(frame_details, text="Gwiazdki: ....")
 label_stars.grid(row=1, column=2, sticky="w")
 
 # Pracownicy
@@ -375,15 +398,15 @@ Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=8, column
 Button(frame_employees, text="Pokaż szczegóły", command=show_employee_detail).grid(row=8, column=1)
 
 # Szczegóły pracownika
-Label(frame_details, text='Szczegóły pracownika:').grid(row=0, column=4, sticky="w", padx=(30, 0))
+Label(frame_details, text="Szczegóły pracownika:").grid(row=0, column=3, sticky="w", padx=(10, 30))
 label_emp_name = Label(frame_details, text='Imię i nazwisko: ....')
-label_emp_name.grid(row=1, column=4, sticky="w")
+label_emp_name.grid(row=1, column=3, sticky="w")
 label_emp_city = Label(frame_details, text='Miasto: ....')
-label_emp_city.grid(row=1, column=5, sticky="w")
+label_emp_city.grid(row=1, column=4, sticky="w")
 label_emp_role = Label(frame_details, text='Stanowisko: ....')
-label_emp_role.grid(row=1, column=6, sticky="w")
+label_emp_role.grid(row=1, column=5, sticky="w")
 label_emp_hotel = Label(frame_details, text='Hotel: ....')
-label_emp_hotel.grid(row=1, column=7, sticky="w")
+label_emp_hotel.grid(row=1, column=6, sticky="w")
 
 
 # Klienci
@@ -406,7 +429,16 @@ listbox_clients = Listbox(frame_clients, width=35)
 listbox_clients.grid(row=5, column=0, columnspan=2)
 Button(frame_clients, text="Usuń", command=remove_client).grid(row=6, column=0, columnspan=2)
 Button(frame_clients, text="Edytuj", command=edit_client).grid(row=7, column=0, columnspan=2)
+Button(frame_clients, text="Pokaż szczegóły", command=show_client_details).grid(row=8, column=0, columnspan=2)
 
+#szczegóły klienta
+Label(frame_details, text="Szczegóły klienta:").grid(row=0, column=7, columnspan=3, sticky="w", padx=(10, 0))
+label_client_name = Label(frame_client_details, text='Imię i nazwisko: ....')
+label_client_name.grid(row=1, column=7, sticky="w")
+label_client_city = Label(frame_client_details, text='Miasto: ....')
+label_client_city.grid(row=1, column=8, sticky="w")
+label_client_hotel = Label(frame_client_details, text='Hotel: ....')
+label_client_hotel.grid(row=1, column=9, sticky="w")
 
 # Mapa
 map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
