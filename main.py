@@ -316,7 +316,7 @@ root.title('HotelMap')
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
 
-ramka_wysokosc = 400
+ramka_wysokosc = 380
 
 frame_hotels = LabelFrame(root, text="Hotele", padx=5, pady=5)
 frame_hotels.grid(row=0, column=0, sticky="nsew")
@@ -390,12 +390,12 @@ hotel_var = StringVar()
 hotel_dropdown = OptionMenu(frame_employees, hotel_var, "")
 hotel_dropdown.grid(row=4, column=1)
 button_add_emp = Button(frame_employees, text="Dodaj", command=add_employee)
-button_add_emp.grid(row=5, column=0, columnspan=2)
+button_add_emp.grid(row=6, column=0)
 listbox_employees = Listbox(frame_employees, width=35)
-listbox_employees.grid(row=6, column=0, columnspan=2)
-Button(frame_employees, text="Usuń", command=remove_employee).grid(row=7, column=0, columnspan=2)
-Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=8, column=0)
-Button(frame_employees, text="Pokaż szczegóły", command=show_employee_detail).grid(row=8, column=1)
+listbox_employees.grid(row=5, column=0, columnspan=2, pady=(10, 10))
+Button(frame_employees, text="Usuń", command=remove_employee).grid(row=7, column=1, columnspan=1, padx=2, pady=(0, 2))
+Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=6, column=1, columnspan=1,  padx=2, pady=(0, 2))
+Button(frame_employees, text="Pokaż szczegóły", command=show_hotel_detail).grid(row=7, column=0, padx=2, pady=(0, 2))
 
 # Szczegóły pracownika
 Label(frame_details, text="Szczegóły pracownika:").grid(row=0, column=3, sticky="w", padx=(10, 30))
@@ -424,12 +424,12 @@ hotel_client_var = StringVar()
 hotel_client_dropdown = OptionMenu(frame_clients, hotel_client_var, "")
 hotel_client_dropdown.grid(row=3, column=1)
 button_add_client = Button(frame_clients, text="Dodaj", command=add_client)
-button_add_client.grid(row=4, column=0, columnspan=2)
+button_add_client.grid(row=5, column=0)
 listbox_clients = Listbox(frame_clients, width=35)
-listbox_clients.grid(row=5, column=0, columnspan=2)
-Button(frame_clients, text="Usuń", command=remove_client).grid(row=6, column=0, columnspan=2)
-Button(frame_clients, text="Edytuj", command=edit_client).grid(row=7, column=0, columnspan=2)
-Button(frame_clients, text="Pokaż szczegóły", command=show_client_details).grid(row=8, column=0, columnspan=2)
+listbox_clients.grid(row=4, column=0, columnspan=2, pady=(10, 10))
+Button(frame_clients, text="Usuń", command=remove_client).grid(row=6, column=1)
+Button(frame_clients, text="Edytuj", command=edit_client).grid(row=5, column=1)
+Button(frame_clients, text="Pokaż szczegóły", command=show_client_details).grid(row=6, column=0)
 
 #szczegóły klienta
 Label(frame_details, text="Szczegóły klienta:").grid(row=0, column=7, columnspan=3, sticky="w", padx=(10, 0))
