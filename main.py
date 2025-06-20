@@ -220,6 +220,16 @@ def update_employee(i):
     hotel_var.set(hotels[0].name if hotels else "")
     button_add_emp.config(text="Dodaj", command=add_employee)
 
+def show_employee_detail():
+    i = listbox_employees.index(ACTIVE)
+    emp = employees[i]
+    label_emp_name.config(text=f"Imię i nazwisko: {emp.first_name} {emp.last_name}")
+    label_emp_city.config(text=f"Miasto: {emp.city}")
+    label_emp_role.config(text=f"Stanowisko: {emp.role}")
+    label_emp_hotel.config(text=f"Hotel: {emp.hotel_name}")
+
+    map_widget.set_zoom(14)
+    map_widget.set_position(emp.coordinates[0], emp.coordinates[1])
 
 # --- Funkcje klientów ---
 def add_client():
@@ -331,13 +341,13 @@ Button(frame_hotels, text="Usuń", command=remove_hotel).grid(row=7, column=1, c
 Button(frame_hotels, text="Edytuj", command=edit_hotel).grid(row=6, column=1, columnspan=1)
 
 # Szczegóły hotelu
-Label(frame_details, text="Szczegóły hotelu:").grid(row=0, column=0, columnspan=3)
+Label(frame_details, text="Szczegóły hotelu:").grid(row=0, column=0, sticky="w")
 label_name = Label(frame_details, text="Nazwa: ....")
-label_name.grid(row=1, column=0)
+label_name.grid(row=1, column=0, sticky="w")
 label_location = Label(frame_details, text="Lokalizacja: ....")
-label_location.grid(row=1, column=1)
+label_location.grid(row=1, column=1, sticky="w")
 label_stars = Label(frame_details, text="Gwiazdek: ....")
-label_stars.grid(row=1, column=2)
+label_stars.grid(row=1, column=2, sticky="w")
 
 # Pracownicy
 Label(frame_employees, text="Imię:").grid(row=0, column=0)
@@ -361,7 +371,20 @@ button_add_emp.grid(row=5, column=0, columnspan=2)
 listbox_employees = Listbox(frame_employees, width=35)
 listbox_employees.grid(row=6, column=0, columnspan=2)
 Button(frame_employees, text="Usuń", command=remove_employee).grid(row=7, column=0, columnspan=2)
-Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=8, column=0, columnspan=2)
+Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=8, column=0)
+Button(frame_employees, text="Pokaż szczegóły", command=show_employee_detail).grid(row=8, column=1)
+
+# Szczegóły pracownika
+Label(frame_details, text='Szczegóły pracownika:').grid(row=0, column=4, sticky="w", padx=(30, 0))
+label_emp_name = Label(frame_details, text='Imię i nazwisko: ....')
+label_emp_name.grid(row=1, column=4, sticky="w")
+label_emp_city = Label(frame_details, text='Miasto: ....')
+label_emp_city.grid(row=1, column=5, sticky="w")
+label_emp_role = Label(frame_details, text='Stanowisko: ....')
+label_emp_role.grid(row=1, column=6, sticky="w")
+label_emp_hotel = Label(frame_details, text='Hotel: ....')
+label_emp_hotel.grid(row=1, column=7, sticky="w")
+
 
 # Klienci
 Label(frame_clients, text="Imię:").grid(row=0, column=0)
