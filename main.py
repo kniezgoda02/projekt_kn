@@ -7,7 +7,6 @@ hotels: list = []
 employees: list = []
 clients: list = []
 
-
 class Hotel:
     def __init__(self, name, location, stars):
         self.name = name
@@ -135,7 +134,7 @@ def update_hotel(i):
     hotels[i].marker = hotels[i].create_marker()
 
     show_hotels()
-    button_add_hotel.configure(text='Zapisz', command=add_hotel)
+    button_add_hotel.configure(text='Dodaj hotel', command=add_hotel)
 
     entry_name.delete(0, END)
     entry_location.delete(0, END)
@@ -151,6 +150,8 @@ def show_hotel_detail():
 
     map_widget.set_zoom(14)
     map_widget.set_position(hotels[i].coordinates[0], hotels[i].coordinates[1])
+
+
 
 
 # Pracownicy
@@ -197,7 +198,7 @@ def edit_employee():
     entry_role.insert(0, emp.role)
     hotel_var.set(emp.hotel_name)
 
-    button_add_hotel.config(text="Zapisz", command=lambda: update_hotel(i))
+    button_add_emp.config(text="Zapisz", command=lambda: update_employee(i))
 
 
 def update_employee(i):
@@ -218,7 +219,7 @@ def update_employee(i):
     entry_city.delete(0, END)
     entry_role.delete(0, END)
     hotel_var.set(hotels[0].name if hotels else "")
-    button_add_emp.config(text="Zapisz", command=add_employee)
+    button_add_emp.config(text="Dodaj pracownika", command=add_employee)
 
 
 def show_employee_detail():
@@ -231,6 +232,9 @@ def show_employee_detail():
 
     map_widget.set_zoom(14)
     map_widget.set_position(emp.coordinates[0], emp.coordinates[1])
+
+
+
 
 
 # --- Funkcje klientów ---
@@ -311,10 +315,16 @@ def show_client_details():
     map_widget.set_position(c.coordinates[0], c.coordinates[1])
 
 
+
+
+
+
 # GUI setup
+# Mapa
 root = Tk()
 root.geometry("1200x800")
 root.title('HotelMap')
+
 
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
@@ -446,13 +456,23 @@ label_client_city.grid(row=11, column=0, sticky="w", padx=(10, 30))
 label_client_hotel = Label(frame_client_details, text='Hotel: ....')
 label_client_hotel.grid(row=12, column=0, sticky="w", padx=(10, 30))
 
-# Mapa
-map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
-map_widget.grid(row=0, column=0, sticky="nsew")
+
+
+
+
+for i in range(4):
+    root.columnconfigure(i, weight=1, uniform="group1")
+
+frame_map = Frame(root)
+frame_map.grid(row=2, column=0, columnspan=4, sticky="nsew")
 frame_map.rowconfigure(0, weight=1)
 frame_map.columnconfigure(0, weight=1)
 
+map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
+map_widget.grid(row=0, column=0, sticky="nsew")
 map_widget.set_position(52.23, 21.0)
 map_widget.set_zoom(6)
 
 root.mainloop()
+
+
