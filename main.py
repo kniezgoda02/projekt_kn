@@ -358,6 +358,71 @@ def show_only_clients():
                                              text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
 
 
+
+
+#tylko danego hotelu
+def show_employees_for_selected_hotel():
+    if not hotels:
+        return
+    try:
+        i = listbox_lista_obiektow.index(ACTIVE)
+    except:
+        return
+    selected_hotel = hotels[i].name
+
+    # Usunięcie wszystkich markerów
+    for emp in employees:
+        if emp.marker:
+            emp.marker.delete()
+            emp.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+
+    # Pokazanie tylko pracowników wybranego hotelu
+    for emp in employees:
+        if emp.hotel_name == selected_hotel:
+            emp.marker = map_widget.set_marker(emp.coordinates[0], emp.coordinates[1],
+                                               text=f"👤 {emp.first_name} {emp.last_name} ({emp.hotel_name})")
+
+
+def show_clients_for_selected_hotel():
+    if not hotels:
+        return
+    try:
+        i = listbox_lista_obiektow.index(ACTIVE)
+    except:
+        return
+    selected_hotel = hotels[i].name
+
+    # Usunięcie wszystkich markerów
+    for emp in employees:
+        if emp.marker:
+            emp.marker.delete()
+            emp.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+
+    # Pokazanie tylko klientów wybranego hotelu
+    for c in clients:
+        if c.hotel_name == selected_hotel:
+            c.marker = map_widget.set_marker(c.coordinates[0], c.coordinates[1],
+                                             text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
+
+
+
+
 # GUI setup
 # Mapa
 root = Tk()
@@ -500,6 +565,12 @@ frame_filters.grid(row=1, column=0, columnspan=4, pady=10)
 Button(frame_filters, text="Pokaż tylko hotele", command=show_only_hotels).grid(row=0, column=0, padx=5)
 Button(frame_filters, text="Pokaż tylko pracowników", command=show_only_employees).grid(row=0, column=1, padx=5)
 Button(frame_filters, text="Pokaż tylko klientów", command=show_only_clients).grid(row=0, column=2, padx=5)
+
+Button(frame_hotels, text="Mapa pracowników", command=show_employees_for_selected_hotel).grid(row=8, column=0, pady=2)
+Button(frame_hotels, text="Mapa klientów", command=show_clients_for_selected_hotel).grid(row=8, column=1, pady=2)
+
+
+
 
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
