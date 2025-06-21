@@ -135,7 +135,7 @@ def update_hotel(i):
     hotels[i].marker = hotels[i].create_marker()
 
     show_hotels()
-    button_add_hotel.configure(text='Zapisz', command=add_hotel)
+    button_add_hotel.configure(text='Dodaj hotel', command=add_hotel)
 
     entry_name.delete(0, END)
     entry_location.delete(0, END)
@@ -197,7 +197,7 @@ def edit_employee():
     entry_role.insert(0, emp.role)
     hotel_var.set(emp.hotel_name)
 
-    button_add_hotel.config(text="Zapisz", command=lambda: update_hotel(i))
+    button_add_emp.config(text="Zapisz", command=lambda: update_employee(i))
 
 
 def update_employee(i):
@@ -218,7 +218,8 @@ def update_employee(i):
     entry_city.delete(0, END)
     entry_role.delete(0, END)
     hotel_var.set(hotels[0].name if hotels else "")
-    button_add_emp.config(text="Zapisz", command=add_employee)
+    button_add_emp.config(text="Dodaj pracownika", command=add_employee)
+
 
 def show_employee_detail():
     i = listbox_employees.index(ACTIVE)
@@ -230,6 +231,7 @@ def show_employee_detail():
 
     map_widget.set_zoom(14)
     map_widget.set_position(emp.coordinates[0], emp.coordinates[1])
+
 
 # --- Funkcje klientów ---
 def add_client():
@@ -308,7 +310,56 @@ def show_client_details():
     map_widget.set_zoom(14)
     map_widget.set_position(c.coordinates[0], c.coordinates[1])
 
+
+# Pokaż
+def show_only_hotels():
+    # Usuń wszystkie markery
+    for e in employees:
+        if e.marker:
+            e.marker.delete()
+            e.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    # Stwórz markery dla hoteli jeśli ich nie ma
+    for h in hotels:
+        if not h.marker:
+            h.marker = map_widget.set_marker(h.coordinates[0], h.coordinates[1], text=f"🏨 {h.name}")
+
+
+def show_only_employees():
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    for e in employees:
+        if not e.marker:
+            e.marker = map_widget.set_marker(e.coordinates[0], e.coordinates[1],
+                                             text=f"👤 {e.first_name} {e.last_name} ({e.hotel_name})")
+
+
+def show_only_clients():
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+    for e in employees:
+        if e.marker:
+            e.marker.delete()
+            e.marker = None
+    for c in clients:
+        if not c.marker:
+            c.marker = map_widget.set_marker(c.coordinates[0], c.coordinates[1],
+                                             text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
+
+
 # GUI setup
+# Mapa
 root = Tk()
 root.geometry("1200x800")
 root.title('HotelMap')
@@ -398,8 +449,8 @@ button_add_emp.grid(row=6, column=0)
 listbox_employees = Listbox(frame_employees, width=35)
 listbox_employees.grid(row=5, column=0, columnspan=2, pady=(10, 10))
 Button(frame_employees, text="Usuń", command=remove_employee).grid(row=7, column=1, columnspan=1, padx=2, pady=(0, 2))
-Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=6, column=1, columnspan=1,  padx=2, pady=(0, 2))
-Button(frame_employees, text="Pokaż szczegóły",command=show_employee_detail).grid(row=7, column=0, padx=2, pady=(0, 2))
+Button(frame_employees, text="Edytuj", command=edit_employee).grid(row=6, column=1, columnspan=1, padx=2, pady=(0, 2))
+Button(frame_employees, text="Pokaż szczegóły", command=show_employee_detail).grid(row=7, column=0, padx=2, pady=(0, 2))
 
 # Szczegóły pracownika
 Label(frame_employee_details, text="Szczegóły pracownika:").grid(row=4, column=0, sticky="w", padx=(10, 30))
@@ -411,7 +462,6 @@ label_emp_role = Label(frame_employee_details, text='Stanowisko: ....')
 label_emp_role.grid(row=7, column=0, sticky="w", padx=(10, 30))
 label_emp_hotel = Label(frame_employee_details, text='Hotel: ....')
 label_emp_hotel.grid(row=8, column=0, sticky="w", padx=(10, 30))
-
 
 # Klienci
 Label(frame_clients, text="Imię:").grid(row=0, column=0)
@@ -435,7 +485,7 @@ Button(frame_clients, text="Usuń", command=remove_client).grid(row=6, column=1)
 Button(frame_clients, text="Edytuj", command=edit_client).grid(row=5, column=1)
 Button(frame_clients, text="Pokaż szczegóły", command=show_client_details).grid(row=6, column=0)
 
-#szczegóły klienta
+# szczegóły klienta
 Label(frame_client_details, text="Szczegóły klienta:").grid(row=9, column=0, columnspan=3, sticky="w", padx=(10, 0))
 label_client_name = Label(frame_client_details, text='Imię i nazwisko: ....')
 label_client_name.grid(row=10, column=0, sticky="w", padx=(10, 30))
@@ -444,12 +494,23 @@ label_client_city.grid(row=11, column=0, sticky="w", padx=(10, 30))
 label_client_hotel = Label(frame_client_details, text='Hotel: ....')
 label_client_hotel.grid(row=12, column=0, sticky="w", padx=(10, 30))
 
-# Mapa
-map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
-map_widget.grid(row=0, column=0, sticky="nsew")
+frame_filters = Frame(root)
+frame_filters.grid(row=1, column=0, columnspan=4, pady=10)
+
+Button(frame_filters, text="Pokaż tylko hotele", command=show_only_hotels).grid(row=0, column=0, padx=5)
+Button(frame_filters, text="Pokaż tylko pracowników", command=show_only_employees).grid(row=0, column=1, padx=5)
+Button(frame_filters, text="Pokaż tylko klientów", command=show_only_clients).grid(row=0, column=2, padx=5)
+
+for i in range(4):
+    root.columnconfigure(i, weight=1, uniform="group1")
+
+frame_map = Frame(root)
+frame_map.grid(row=2, column=0, columnspan=4, sticky="nsew")
 frame_map.rowconfigure(0, weight=1)
 frame_map.columnconfigure(0, weight=1)
 
+map_widget = tkintermapview.TkinterMapView(frame_map, width=1350, height=400, corner_radius=0)
+map_widget.grid(row=0, column=0, sticky="nsew")
 map_widget.set_position(52.23, 21.0)
 map_widget.set_zoom(6)
 
