@@ -358,9 +358,7 @@ def show_only_clients():
                                              text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
 
 
-
-
-#tylko danego hotelu
+# tylko danego hotelu
 def show_employees_for_selected_hotel():
     if not hotels:
         return
@@ -419,8 +417,6 @@ def show_clients_for_selected_hotel():
         if c.hotel_name == selected_hotel:
             c.marker = map_widget.set_marker(c.coordinates[0], c.coordinates[1],
                                              text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
-
-
 
 
 # GUI setup
@@ -568,9 +564,6 @@ Button(frame_filters, text="Pokaż tylko klientów", command=show_only_clients).
 
 Button(frame_hotels, text="Mapa pracowników", command=show_employees_for_selected_hotel).grid(row=8, column=0, pady=2)
 Button(frame_hotels, text="Mapa klientów", command=show_clients_for_selected_hotel).grid(row=8, column=1, pady=2)
-
-
-
 
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
