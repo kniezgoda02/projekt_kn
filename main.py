@@ -7,6 +7,7 @@ hotels: list = []
 employees: list = []
 clients: list = []
 
+
 class Hotel:
     def __init__(self, name, location, stars):
         self.name = name
@@ -152,8 +153,6 @@ def show_hotel_detail():
     map_widget.set_position(hotels[i].coordinates[0], hotels[i].coordinates[1])
 
 
-
-
 # Pracownicy
 def add_employee():
     fname = entry_fname.get()
@@ -234,9 +233,6 @@ def show_employee_detail():
     map_widget.set_position(emp.coordinates[0], emp.coordinates[1])
 
 
-
-
-
 # --- Funkcje klientów ---
 def add_client():
     fname = entry_c_fname.get()
@@ -315,8 +311,51 @@ def show_client_details():
     map_widget.set_position(c.coordinates[0], c.coordinates[1])
 
 
+# Pokaż
+def show_only_hotels():
+    # Usuń wszystkie markery
+    for e in employees:
+        if e.marker:
+            e.marker.delete()
+            e.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    # Stwórz markery dla hoteli jeśli ich nie ma
+    for h in hotels:
+        if not h.marker:
+            h.marker = map_widget.set_marker(h.coordinates[0], h.coordinates[1], text=f"🏨 {h.name}")
 
 
+def show_only_employees():
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+    for c in clients:
+        if c.marker:
+            c.marker.delete()
+            c.marker = None
+    for e in employees:
+        if not e.marker:
+            e.marker = map_widget.set_marker(e.coordinates[0], e.coordinates[1],
+                                             text=f"👤 {e.first_name} {e.last_name} ({e.hotel_name})")
+
+
+def show_only_clients():
+    for h in hotels:
+        if h.marker:
+            h.marker.delete()
+            h.marker = None
+    for e in employees:
+        if e.marker:
+            e.marker.delete()
+            e.marker = None
+    for c in clients:
+        if not c.marker:
+            c.marker = map_widget.set_marker(c.coordinates[0], c.coordinates[1],
+                                             text=f"🧳 {c.first_name} {c.last_name} ({c.hotel_name})")
 
 
 # GUI setup
@@ -324,7 +363,6 @@ def show_client_details():
 root = Tk()
 root.geometry("1200x800")
 root.title('HotelMap')
-
 
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
@@ -456,9 +494,12 @@ label_client_city.grid(row=11, column=0, sticky="w", padx=(10, 30))
 label_client_hotel = Label(frame_client_details, text='Hotel: ....')
 label_client_hotel.grid(row=12, column=0, sticky="w", padx=(10, 30))
 
+frame_filters = Frame(root)
+frame_filters.grid(row=1, column=0, columnspan=4, pady=10)
 
-
-
+Button(frame_filters, text="Pokaż tylko hotele", command=show_only_hotels).grid(row=0, column=0, padx=5)
+Button(frame_filters, text="Pokaż tylko pracowników", command=show_only_employees).grid(row=0, column=1, padx=5)
+Button(frame_filters, text="Pokaż tylko klientów", command=show_only_clients).grid(row=0, column=2, padx=5)
 
 for i in range(4):
     root.columnconfigure(i, weight=1, uniform="group1")
@@ -474,5 +515,3 @@ map_widget.set_position(52.23, 21.0)
 map_widget.set_zoom(6)
 
 root.mainloop()
-
-
